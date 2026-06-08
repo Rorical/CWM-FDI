@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 
 
 # parameters to modify 
-filename="my_input.txt"
+filename="time_py.txt"
 label='label'
 xlabel = 'xlabel'
 ylabel = 'ylabel'
-title='Simple plot'
-fig_name='my_graph.png'
+title='Read Time'
+fig_name='read_time.png'
 bins=100 #adjust the number of bins to your plot
 
 ## load data from input file

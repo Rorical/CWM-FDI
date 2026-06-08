@@ -57,4 +57,24 @@ The matrix is defined as double nested list in the code:
 Matrix = List[List[float]]
 ```
 
-The slow code just compute each element that access a in consecutive rows but b in consecutive columns. This is not cache friendly to b because each time the pointer jumps far away to the next row, and cache only store consecutive memory words. The better way is to also access b in consecutive rows, such as taking transpose of it first, then multiple a and b row by row.
+The slow version has no optimization on memory access pattern which hurts the cache.
+#### Fast 1
+![[Pasted image 20260608123415.png]]
+![[Pasted image 20260608123532.png|697]]
+![[flamegraph_fast1.svg]]
+
+Fast 1 version improve some speed by making locality access of arrays. It first make references of a and c matrices of their rows and then operate of the rows reference directly without accessing rows independently in that loop.
+
+#### Fast 2
+![[Pasted image 20260608123434.png]]
+![[Pasted image 20260608123548.png]]
+![[flamegraph_fast2.svg]]
+
+Fast version 2 removed the repeated assignment of variable `total` inside the loop, by overriding matrix c to 0 and accumulate directly on it. This saves one memory variable creation and access.
+
+#### Fast 3
+![[Pasted image 20260608123316.png]]
+![[Pasted image 20260608123607.png]]
+![[flamegraph_fast3.svg]]
+
+Fast version 3 is most useful in improving efficiency by changing the memory accessing pattern completely. Instead of doing column access on matrix b for every point, it first take transpose then access every rows of b. This makes memory access predictable and adjacent, so cache works the best. The computation is same, but CPU runs faster on more cache access.

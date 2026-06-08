@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "b27d5bc62c0914ef",
+        "id": "dd7adbe3b9f0b581",
         "type": "tabs",
         "children": [
           {
-            "id": "62da4f9a7ccf4143",
+            "id": "860e4db6b238760e",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Assignment1.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Assignment1"
+              "title": "New tab"
             }
           }
         ]
@@ -95,7 +91,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Assignment1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +100,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Assignment1"
+              "title": "Backlinks"
             }
           },
           {
@@ -114,12 +109,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Assignment1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Assignment1"
+              "title": "Outgoing links"
             }
           },
           {
@@ -157,13 +151,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Assignment1.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Assignment1"
+              "title": "Outline"
             }
           }
         ]
@@ -184,17 +177,20 @@
       "bases:Create new base": false
     }
   },
-  "active": "62da4f9a7ccf4143",
+  "active": "860e4db6b238760e",
   "lastOpenFiles": [
-    "flamegraph.svg",
     "Assignment1.md",
-    "Pasted image 20260608103132.png",
-    "Pasted image 20260608102304.png",
-    "Pasted image 20260608101824.png",
-    "Pasted image 20260608101614.png",
-    "Pasted image 20260608101336.png",
-    "Pasted image 20260608101019.png",
-    "Pasted image 20260608100712.png",
+    "flamegraph_fast3.svg",
+    "flamegraph_fast2.svg",
+    "flamegraph_fast1.svg",
+    "Pasted image 20260608123607.png",
+    "Pasted image 20260608123548.png",
+    "Pasted image 20260608123532.png",
+    "Pasted image 20260608123434.png",
+    "Pasted image 20260608123415.png",
+    "Pasted image 20260608123316.png",
+    "Assignment2.md",
+    "Pasted image 20260608121813.png",
     "assignment1",
     "Welcome.md"
   ]
