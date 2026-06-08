@@ -13,17 +13,17 @@ fi
 STACKCOLLAPSE="$(command -v stackcollapse-perf.pl || true)"
 FLAMEGRAPH="$(command -v flamegraph.pl || true)"
 
-if [[ -z "$STACKCOLLAPSE" && -x "./FlameGraph/stackcollapse-perf.pl" ]]; then
-  STACKCOLLAPSE="./FlameGraph/stackcollapse-perf.pl"
+if [[ -z "$STACKCOLLAPSE" && -x "../scripts/FlameGraph/stackcollapse-perf.pl" ]]; then
+  STACKCOLLAPSE="../scripts/FlameGraph/stackcollapse-perf.pl"
 fi
 
-if [[ -z "$FLAMEGRAPH" && -x "./FlameGraph/flamegraph.pl" ]]; then
-  FLAMEGRAPH="./FlameGraph/flamegraph.pl"
+if [[ -z "$FLAMEGRAPH" && -x "../scripts/FlameGraph/flamegraph.pl" ]]; then
+  FLAMEGRAPH="../scripts/FlameGraph/flamegraph.pl"
 fi
 
 if [[ -z "$STACKCOLLAPSE" || -z "$FLAMEGRAPH" ]]; then
   echo "Error: could not find FlameGraph scripts." >&2
-  echo "Need stackcollapse-perf.pl and flamegraph.pl on PATH or in ./FlameGraph/" >&2
+  echo "Need stackcollapse-perf.pl and flamegraph.pl on PATH or in ../scripts/FlameGraph/" >&2
   exit 1
 fi
 
