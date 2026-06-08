@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "dd7adbe3b9f0b581",
+        "id": "6632165d9f9e2e72",
         "type": "tabs",
         "children": [
           {
-            "id": "860e4db6b238760e",
+            "id": "511fe3190400b3de",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -177,20 +177,20 @@
       "bases:Create new base": false
     }
   },
-  "active": "860e4db6b238760e",
+  "active": "511fe3190400b3de",
   "lastOpenFiles": [
-    "Assignment1.md",
-    "flamegraph_fast3.svg",
-    "flamegraph_fast2.svg",
-    "flamegraph_fast1.svg",
-    "Pasted image 20260608123607.png",
-    "Pasted image 20260608123548.png",
-    "Pasted image 20260608123532.png",
-    "Pasted image 20260608123434.png",
-    "Pasted image 20260608123415.png",
-    "Pasted image 20260608123316.png",
     "Assignment2.md",
-    "Pasted image 20260608121813.png",
+    "ping_localhost_cdf.png",
+    "read_time_py_10runs.png",
+    "read_time_c_pinned.png",
+    "read_time_c.png",
+    "read_time_py.png",
+    "read_time 2.png",
+    "Pasted image 20260608150358.png",
+    "Pasted image 20260608145922.png",
+    "Pasted image 20260608145617.png",
+    "read_time 1.png",
+    "Assignment1.md",
     "assignment1",
     "Welcome.md"
   ]

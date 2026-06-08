@@ -35,19 +35,21 @@ def write_list_to_file(values, filename):
 #   min_diff - the minimum difference between two 
 #   consecutive reads
 
-def get_min_time_diff(num,filename):
+def get_min_time_diff(num,filename,discard=100):
 	if num < 2:
         	raise ValueError("num must be at least 2")
 
-	prev = time.perf_counter_ns()
+	ts = [0.0] * num
+	for i in range(num):
+		ts[i] = time.perf_counter_ns()
+
+	diff=[0]*(num-1-discard)
 	min_diff = None
-	diff=[0]*num
-	for i in range(num - 1):
-		curr = time.perf_counter_ns()
-		diff[i] = curr - prev
-		if min_diff is None or diff[i] < min_diff:
-			min_diff = diff[i]
-		prev = curr
+	for i in range(1 + discard, num):
+		d = ts[i] - ts[i - 1]
+		diff[i-1-discard] = d
+		if min_diff is None or d < min_diff:
+			min_diff = d
 	write_list_to_file(diff,filename)
 	return min_diff
 
