@@ -11,10 +11,14 @@
             "id": "116ea8c8d5342c07",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Assignment3.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Assignment3"
             }
           }
         ]
@@ -179,6 +183,12 @@
   },
   "active": "116ea8c8d5342c07",
   "lastOpenFiles": [
+    "Pasted image 20260609114037.png",
+    "Pasted image 20260609113816.png",
+    "Pasted image 20260609112857.png",
+    "Pasted image 20260609105556.png",
+    "Pasted image 20260609105525.png",
+    "Assignment3.md",
     "Assignment2.md",
     "ping_localhost_cdf.png",
     "read_time_py_10runs.png",
@@ -186,10 +196,6 @@
     "read_time_c.png",
     "read_time_py.png",
     "read_time 2.png",
-    "Pasted image 20260608150358.png",
-    "Pasted image 20260608145922.png",
-    "Pasted image 20260608145617.png",
-    "read_time 1.png",
     "Assignment1.md",
     "assignment1",
     "Welcome.md"
