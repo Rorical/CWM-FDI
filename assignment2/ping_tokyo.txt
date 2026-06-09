@@ -1,5 +1,0 @@
-PING www.u-tokyo.ac.jp (210.152.243.234) 56(84) bytes of data.
-
---- www.u-tokyo.ac.jp ping statistics ---
-10 packets transmitted, 0 received, 100% packet loss, time 1870ms
-

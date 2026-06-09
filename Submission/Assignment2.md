@@ -390,7 +390,7 @@ done
 
 ### 18. Optimize rdtime.c for smaller minimum diff
 
-The original `read_tsc()` uses `_mm_lfence()` before and after `__rdtsc()` to serialize execution. Removing LFENCE reduces the minimum diff because LFENCE adds ~20–30 cycles of serialization overhead:
+Removing LFENCE reduces the minimum diff because LFENCE adds ~20–30 cycles of serialization overhead:
 
 ```c
 static inline uint64_t read_tsc(void) {
@@ -408,10 +408,10 @@ static inline uint64_t read_tsc(void) {
 
 | Version | Min cycles | Min time |
 |---------|-----------|----------|
-| Original (with LFENCE) | 44 | 12.22 ns |
-| Optimized (no LFENCE) | 20 | 5.56 ns |
+| Original | 44 | 12.22 ns |
+| Optimized| 20 | 5.56 ns |
 
-Removing LFENCE reduces the minimum by ~55%. However, without serialization, out-of-order execution can reorder surrounding instructions, reducing measurement accuracy. The original version is preferred for precise timing because LFENCE guarantees that all previous instructions have completed before RDTSC executes.
+Removing LFENCE reduces the minimum by ~55%. However, without serialization, out-of-order execution can reorder surrounding instructions, reducing measurement accuracy.
 
 ### 19. Estimate TSC reads per ping RTT
 
@@ -424,15 +424,12 @@ uint64_t end = read_tsc();
 uint64_t cycles = end - start;
 ```
 
-Output:
 ```
 Total TSC cycles for one ping RTT: 21917990
 Estimated TSC reads per ping RTT: 398508
 ```
 
-At 3.6 GHz, one RTT to Google DNS takes ~21.9 million cycles (~6.1 ms). Each TSC read costs ~55 cycles (median from Q5), so we could perform roughly **400,000 TSC reads** while waiting for a single ping round-trip.
-
-This is a rough estimate — the `system()` call and ping process startup add overhead beyond the actual network RTT. A more precise measurement would use raw sockets and inline the timing loop.
+At 3.6 GHz, one RTT to Google DNS takes ~21.9 million cycles. Each TSC read costs 55 cycles, so we could perform roughly **400,000 TSC reads** while waiting for a single ping round-trip.
 
 ### 20. Annotate matmul_slow.py timing
 
@@ -454,21 +451,25 @@ Total matmul time per rep: 100.99 ms
 Single cell time: 6163.8 ns
 ```
 
-The slow triple-nested loop (i-j-k order) is cache-unfriendly for matrix B: each inner iteration accesses `b[k][j]` with the column index varying fastest, causing strided memory access across rows.
+The slow triple-nested loop (i-j-k order) is cache-unfriendly for matrix B: each inner iteration accesses `b[k][j]` with the column index varying quick, causing strided memory access across rows.
 
 ### 21. Compare matmul_fast functions
 
 All three fast variants were timed with N=128, 20 repetitions:
 
-| Variant | Time per rep (ms) | Speedup vs slow | Optimization |
-|---------|------------------|-----------------|--------------|
-| matmul_slow | 100.99 | 1.00× (baseline) | — |
-| matmul_fast1 | 89.03 | 1.13× | Hoisted row references |
-| matmul_fast2 | 89.40 | 1.13× | Inner-loop reduction (i-k-j) |
-| matmul_fast3 | 73.11 | 1.38× | Matrix transpose + contiguous access |
+| Variant      | Time per rep (ms) | Speedup vs slow | Optimization                         |
+| ------------ | ----------------- | --------------- | ------------------------------------ |
+| matmul_slow  | 100.99            | 1.00×           | None                                 |
+| matmul_fast1 | 89.03             | 1.13×           | Hoisted row references               |
+| matmul_fast2 | 89.40             | 1.13×           | Inner-loop reduction (i-k-j)         |
+| matmul_fast3 | 73.11             | 1.38×           | Matrix transpose + contiguous access |
 
-**matmul_fast3 is the fastest** because it transposes matrix B before multiplication. The transpose converts column-major access (`b[k][j]`) into row-major access (`bt[j][k]`), which is cache-friendly (sequential memory access). The extra cost of the O(n²) transpose is negligible compared to the O(n³) multiplication savings.
+**matmul_fast3 is the fastest** because it transposes matrix B before multiplication. The transpose converts column-major access (`b[k][j]`) into row-major access (`bt[j][k]`) which is cache-friendly. The extra cost of the O(n²) transpose is negligible compared to the O(n³) multiplication.
 
-matmul_fast1 and matmul_fast2 show similar performance — hoisting row pointers (fast1) and reordering loops (fast2) both improve over the baseline but don't address the fundamental cache miss problem for matrix B.
+matmul_fast1 and matmul_fast2 show similar performance: hoisting row pointers (fast1) and reordering loops (fast2) both improve over the baseline but don't address the fundamental cache miss problem for matrix B.
 
 ### 22. Three good coding practices
+
+1. Be aware of CPU cache and context switch: sometimes even if algorithm is in theory optimal, the implementation may cause the real performance to be worse than expected. The memory access patterns and multi-threading need careful design. Memory access should make best use of locality and contiguous access to ensure maximum cache hit.
+2. Make use of language specific patterns: Python as interpreted language should be used to invoke low level programs instead of implementing all computations in python, which is slow and expensive. Numpy, for example, translate all operations to low level C function executions which operate on bare memory.
+3. Use perf, time and other tools to debug programs for potential bottleneck. It's better to experiment and adjust rather than guessing which part is inefficient.
