@@ -29,25 +29,22 @@ def _vulnerable_check(username: str, password: str) -> bool:
 
 def safe_check(username: str, password: str) -> bool:
     """
-    stub for safe password check
-    To be completed by you!
+    Constant-time password check that eliminates the timing side channel.
+    Always iterates over all characters and sleeps the same amount per character,
+    regardless of whether they match.
     """
     if username != SECRET_USERNAME:
         return False
 
     result = True
+    max_len = max(len(password), len(SECRET_PASSWORD))
 
-    for i, ch in enumerate(password):
-        # i == index of the current character
-        # ch == current character
-        
-        # code below is vulnerable. Fix it!
-        # then replace _vulnerable_check with safe_check in login_view() below
-        if i >= len(SECRET_PASSWORD) or ch != SECRET_PASSWORD[i]:
-            return False
+    for i in range(max_len):
+        if i >= len(SECRET_PASSWORD) or i >= len(password) or password[i] != SECRET_PASSWORD[i]:
+            result = False
         time.sleep(DELAY_PER_CHAR)
 
-    return len(password) == len(SECRET_PASSWORD)
+    return result
 
 
 
@@ -61,7 +58,7 @@ def login_view(request):
         password = request.POST.get("password", "")
 
         t0 = time.perf_counter()
-        success = _vulnerable_check(username, password) # replace with safe_check as neede!
+        success = safe_check(username, password)
         elapsed_ms = (time.perf_counter() - t0) * 1000
 
         if success:
