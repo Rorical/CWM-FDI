@@ -3,7 +3,7 @@
 Name: Cody (Zhexian) Liu
 Assignment Number: 6
 Repo Link: https://github.com/Rorical/CWM-FDI
-
+Code Link: https://github.com/Rorical/CWM-FDI/blob/main/assignment6/main.py
 ## Project Information
 
 ### Overview
