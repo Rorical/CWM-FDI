@@ -289,3 +289,60 @@ After the attack, Dyn worked with law enforcement and security firms to analyse 
 - **Share threat intelligence**: Collaboration between governments, ISPs and researchers helps detect botnets earlier
 - **IoT security regulations**: After this attack, the UK (PSTI Act) and California (SB-327) introduced IoT security standards requiring minimum security baselines for connected devices
 
+## DNS Failure Case Study — Cloudflare 1.1.1.1 (July 14, 2025)
+
+### What happened and where?
+
+On July 14, 2025, Cloudflare's public DNS resolver 1.1.1.1 became globally unavailable for 62 minutes (21:52–22:54 UTC). Users who had 1.1.1.1 configured as their DNS server could not resolve any domain names. Cloudflare operates a global anycast network with hundreds of edge servers worldwide, so this was a complete global outage.
+
+### Why did the DNS fail?
+
+The failure was due to an internal configuration error. On June 6, 2025, a Cloudflare engineer made a configuration change to prepare a service topology for a new Data Localization Suite (DLS) service that was not yet in production. The change accidentally included the 1.1.1.1 Resolver's IP prefixes alongside the intended prefixes. This error hid for over a month because the DLS service was not live.
+
+On July 14, a second change was made to the same DLS service: an offline test data centre location was added. This triggered a global refresh of the associated routes. Because the 1.1.1.1 prefixes were linked to the DLS service from the June 6 error, the 1.1.1.1 Resolver's service topology was reduced from all locations down to a single offline location. All 1.1.1.1 BGP prefixes were immediately withdrawn from the global routing table worldwide.
+
+The prefix 1.1.1.0/24 had historical usage before Cloudflare acquired it in 2018, so when Cloudflare's routes disappeared, dormant routing entries from Tata Communications (AS4755) became visible, which looked like a BGP hijack but was not the cause of the outage.
+
+### Who was affected and how?
+
+Anyone using Cloudflare's 1.1.1.1, 1.0.0.1, or their IPv6 equivalents (2606:4700:4700::1111, 2606:4700:4700::1001) as their DNS resolver. This included:
+
+- **Individuals** who manually set 1.1.1.1 on their devices or routers
+- **Organisations** using Cloudflare Gateway DNS for content filtering and security
+- **WARP users** who rely on 1.1.1.1 for DNS resolution
+
+DoH (DNS-over-HTTPS) users were mostly unaffected because they connect via the domain `cloudflare-dns.com` which uses different IP addresses.
+
+### Could it have been prevented?
+
+Yes. The root cause was a legacy configuration system that:
+1. Used hard-coded lists of data centre locations tied to IP prefixes. Error-prone and hard to audit
+2. Didn't use progressive/staged deployment. Changes propagated to every data centre instantly with no staging testing
+3. Required maintaining two systems (legacy + modern) that needed to stay in sync
+
+If the change had gone through staged canary deployments with health monitoring, the error would have been caught before reaching all global data centres.
+
+### How did Cloudflare react and recover?
+
+| Time (UTC) | Event                                                             |
+| ---------- | ----------------------------------------------------------------- |
+| 21:48      | Configuration change triggers global route withdrawal             |
+| 21:52      | DNS traffic to 1.1.1.1 begins dropping globally                   |
+| 22:01      | Internal alerts fire: incident declared                           |
+| 22:20      | Configuration reverted and BGP prefixes begin being re-advertised |
+| 22:54      | Full restoration. Traffic returns to normal levels                |
+|            |                                                                   |
+
+Within 19 minutes of detection, Cloudflare identified the issue and deployed a revert. The revert restored BGP announcements instantly, but it took another 34 minutes for all edge servers to rebind the IP addresses because Cloudflare's change management system applies progressive rollouts by default for safety. They accelerated this process given the severity.
+
+### What steps have been taken to prevent future failures?
+
+From Cloudflare's post-mortem:
+- **Deprecate legacy addressing systems**: The old system that required hard-coding IP-to-location mappings will be replaced entirely with the modern approach that uses progressive, health-monitored deployment
+- **Stage all addressing deployments**: Every topology change will go through canary deployments with automated health checks before rolling out globally
+- **Improve test coverage**: Better automated testing for service topology configuration changes
+
+I would also propose:
+- **Automated validation of dormant configs**: Periodic jobs that detect when a pre-production configuration accidentally references production IP space and flag it before it can cause harm
+- **Cross-team review for topology changes**: Any change touching the global route advertisement system should require sign-off from both the DLS team and the core DNS team
+
