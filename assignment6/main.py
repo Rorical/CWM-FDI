@@ -76,7 +76,7 @@ def _build_ip_inheritance(hops: list[dict]) -> list[str]:
 
     first_public = public_positions[0][1] if public_positions else None
     if first_public is None:
-        return ordered_publics
+        return None
 
     for i, ip in enumerate(all_ips):
         if _is_public_ip(ip) or ip in _ip_to_public:
@@ -135,7 +135,7 @@ def get_carbon_intensity(ip: str) -> dict | None:
 #   - DC switching/routing gear that processes packets at the destination
 #
 # Excluded:
-#   - Server request processing  (CPU, memory, storage at google.com)
+#   - Server request processing  (CPU, memory, storage at target server)
 #   - Client device processing   (CPU, display, local NIC overhead)
 #   - DC cooling, UPS, lighting  (overhead is proportionally excluded)
 #   - Embodied/manufacturing of networking hardware  (handled separately)
@@ -169,7 +169,7 @@ def get_carbon_intensity(ip: str) -> dict | None:
 #   7. The return path is assumed to follow the same route and consume
 #      the same energy as the forward path (symmetric routing assumption).
 #
-_DATA_BYTES = 1_000_000  # Default: 1 MB request + response
+_DATA_BYTES = 1_073_741_824  # Default: 1 GiB (≈1.0 displayed as GB) request + response
 
 _NET_OP_KWH_PER_GB = 0.059
 _NET_EM_KWH_PER_GB = 0.013
@@ -245,7 +245,7 @@ def main():
     estimate = estimate_request_energy(_DATA_BYTES, visible_ips, hidden)
 
     if estimate:
-        print(f"Transport energy estimate for {estimate['data_mb']:.1f} MB request to {target}\n")
+        print(f"Transport energy estimate for {estimate['data_mb'] / 1024:.1f} GB request to {target}\n")
         print(f"  Route: {len(visible_ips)} visible + {hidden} silent = {estimate['total_hops']} hops")
         print(f"  Network energy:      {estimate['network_energy_kwh']:.6f} kWh")
         print(f"  DC networking:       {estimate['dc_net_energy_kwh']:.6f} kWh")
