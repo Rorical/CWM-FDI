@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Assignment6.md",
+                "file": "Assignment5.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Assignment6"
+              "title": "Assignment5"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "8b58a039514998f4",
@@ -182,12 +183,13 @@
   },
   "active": "775ce5a2449bf380",
   "lastOpenFiles": [
+    "Assignment6.md",
+    "Assignment5.md",
     "Pasted image 20260611102552.png",
     "Pasted image 20260611102535.png",
     "Pasted image 20260611102522.png",
     "Pasted image 20260611102507.png",
     "Assignment4.md",
-    "Assignment6.md",
     "Pasted image 20260610120428.png",
     "screenshots",
     "Assignment3.md",
@@ -197,7 +199,6 @@
     "Pasted image 20260609105556.png",
     "Pasted image 20260609105525.png",
     "Assignment2.md",
-    "ping_localhost_cdf.png",
     "Assignment1.md",
     "assignment1",
     "Welcome.md"
