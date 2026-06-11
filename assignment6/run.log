@@ -1,0 +1,26 @@
+Transport energy estimate for 1.0 GB request to google.com
+
+  Route: 15 visible + 7 silent = 22 hops
+  Network energy:      0.072000 kWh
+  DC networking:       0.016750 kWh
+  Total transport:     0.088750 kWh
+  Network carbon:      17.405 gCO₂
+  DC networking carb:  6.342 gCO₂
+  Total transport CO₂: 23.747 gCO₂
+
+  Per-hop breakdown:
+    163.1.26.134         World                               0.003273 kWh  × 442 gCO₂/kWh = 1.447298 gCO₂
+    193.63.109.41        United Kingdom                      0.003273 kWh  × 268 gCO₂/kWh = 0.877925 gCO₂
+    193.63.108.69        United Kingdom                      0.003273 kWh  × 268 gCO₂/kWh = 0.877925 gCO₂
+    146.97.37.193        United Kingdom                      0.003273 kWh  × 268 gCO₂/kWh = 0.877925 gCO₂
+    146.97.33.6          United Kingdom                      0.003273 kWh  × 268 gCO₂/kWh = 0.877925 gCO₂
+    146.97.33.61         World                               0.003273 kWh  × 442 gCO₂/kWh = 1.447298 gCO₂
+    146.97.35.18         United Kingdom                      0.003273 kWh  × 268 gCO₂/kWh = 0.877925 gCO₂
+    72.14.205.74         United States of America            0.003273 kWh  × 379 gCO₂/kWh = 1.239136 gCO₂
+    192.178.97.117       United States of America            0.003273 kWh  × 379 gCO₂/kWh = 1.239136 gCO₂
+    192.178.97.191       United States of America            0.003273 kWh  × 379 gCO₂/kWh = 1.239136 gCO₂
+    192.178.97.51        World                               0.003273 kWh  × 442 gCO₂/kWh = 1.447298 gCO₂
+    142.250.239.28       United States of America            0.003273 kWh  × 379 gCO₂/kWh = 1.239136 gCO₂
+    209.85.250.242       United States of America            0.003273 kWh  × 379 gCO₂/kWh = 1.239136 gCO₂
+    172.253.53.146       United States of America            0.003273 kWh  × 379 gCO₂/kWh = 1.239136 gCO₂
+    142.250.129.138      United States of America            0.003273 kWh  × 379 gCO₂/kWh = 1.239136 gCO₂
