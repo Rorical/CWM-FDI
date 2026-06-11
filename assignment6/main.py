@@ -47,7 +47,7 @@ def _is_public_ip(ip: str) -> bool:
         return False
     if first == 172 and 16 <= int(parts[1]) <= 31:
         return False
-    if first == 192 and parts[1] == '168':
+    if first == 192 and int(parts[1]) == 168:
         return False
     return True
 
@@ -58,28 +58,37 @@ _ip_to_public: dict[str, str] = {}
 
 
 def _build_ip_inheritance(hops: list[dict]) -> list[str]:
-    """Walk hops in route order, mapping private IPs to the nearest public IP."""
+    """Walk hops in route order, mapping private IPs to their nearest public IP by
+    probe position.  For equal-distance ties the upstream (earlier) public wins,
+    since that is the likely NAT gateway."""
     all_ips = [p['ip'] for h in hops for p in h['probes'] if p['ip']]
 
-    first_public: str | None = None
-    for ip in all_ips:
-        if _is_public_ip(ip):
-            first_public = ip
-            break
+    public_positions: list[tuple[int, str]] = [
+        (i, ip) for i, ip in enumerate(all_ips) if _is_public_ip(ip)
+    ]
 
-    last_public = first_public
     ordered_publics: list[str] = []
+    for _, ip in public_positions:
+        if ip not in ordered_publics:
+            ordered_publics.append(ip)
+        if ip not in _gw_cache:
+            _gw_cache[ip] = None
 
-    for ip in all_ips:
-        if _is_public_ip(ip):
-            if ip not in _gw_cache:
-                _gw_cache[ip] = None  # reserve slot, will be filled on first lookup
-            if ip not in ordered_publics:
-                ordered_publics.append(ip)
-            last_public = ip
-        else:
-            if first_public is not None and ip not in _ip_to_public:
-                _ip_to_public[ip] = last_public or first_public
+    first_public = public_positions[0][1] if public_positions else None
+    if first_public is None:
+        return ordered_publics
+
+    for i, ip in enumerate(all_ips):
+        if _is_public_ip(ip) or ip in _ip_to_public:
+            continue
+        best = first_public
+        best_dist = float('inf')
+        for pos, pub_ip in public_positions:
+            dist = abs(i - pos)
+            if dist < best_dist or (dist == best_dist and pos < i):
+                best_dist = dist
+                best = pub_ip
+        _ip_to_public[ip] = best
 
     return ordered_publics
 
@@ -136,7 +145,7 @@ def get_carbon_intensity(ip: str) -> dict | None:
 #
 # Global network operational energy: 310 TWh/yr  (IEA 2022)
 # Global DC operational energy:      290 TWh/yr  (IEA 2022)
-# Global internet traffic:            5.29 ZB/yr (ITU 2023)
+# Global internet traffic:           5.29 ZB/yr  (ITU 2023)
 #
 # Network operational  intensity = 310 TWh / 5.29 ZB = 0.059 kWh/GB
 # Network embodied     intensity =  68 TWh / 5.29 ZB = 0.013 kWh/GB  (Malmodin 2023)
