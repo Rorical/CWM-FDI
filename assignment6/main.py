@@ -1,6 +1,7 @@
 import re
 import sys
 import subprocess
+import ipaddress
 import requests
 
 _HOP_RE = re.compile(r'\s*(\d+)\s+(.*)')
@@ -39,17 +40,10 @@ def parse_probe_line(line: str) -> dict | None:
 
 
 def _is_public_ip(ip: str) -> bool:
-    parts = ip.split('.')
-    if len(parts) != 4:
+    try:
+        return ipaddress.ip_address(ip).is_global
+    except ValueError:
         return False
-    first = int(parts[0])
-    if first == 10:
-        return False
-    if first == 172 and 16 <= int(parts[1]) <= 31:
-        return False
-    if first == 192 and int(parts[1]) == 168:
-        return False
-    return True
 
 
 _GW_API = 'https://api.thegreenwebfoundation.org/api/v3/ip-to-co2intensity'
@@ -157,9 +151,9 @@ def get_carbon_intensity(ip: str) -> dict | None:
 #      consume more power than access routers; we lack per-hop hardware data.
 #   2. NIC energy is not itemised — it is included in the per-hop network
 #      average, since NIC power is part of the global network total (310 TWh).
-#   3. DC networking is estimated at 25 % of total DC energy, based on
-#      typical DC power breakdowns (networking ≈ 10-15 % of IT load, IT load
-#      ≈ 50-60 % of total DC).  This is a rough heuristic.
+    #   3. DC networking is estimated at 25 % of total DC energy as a
+    #      heuristic assumption; this is not directly measured for the target
+    #      datacentre and should be tested in sensitivity analysis.
 #   4. Silent (non-responding) hops are counted toward the hop total but
 #      use the averaged energy — they still exist and forward traffic.
 #   5. Annual average intensities from Ember (via Green Web Foundation API)
@@ -169,7 +163,7 @@ def get_carbon_intensity(ip: str) -> dict | None:
 #   7. The return path is assumed to follow the same route and consume
 #      the same energy as the forward path (symmetric routing assumption).
 #
-_DATA_BYTES = 1_073_741_824  # Default: 1 GiB (≈1.0 displayed as GB) request + response
+_DATA_BYTES = 1_000_000_000  # Default: 1 GB request + response
 
 _NET_OP_KWH_PER_GB = 0.059
 _NET_EM_KWH_PER_GB = 0.013
@@ -179,7 +173,7 @@ _DC_NET_FRAC = 0.25  # fraction of DC energy attributed to networking gear
 
 
 def bytes_to_gb(b: int) -> float:
-    return b / (1024 ** 3)
+    return b / 1_000_000_000
 
 
 def estimate_request_energy(
@@ -220,7 +214,7 @@ def estimate_request_energy(
     total_carbon_g = total_net_carbon_kg * 1000 + dc_carbon_kg * 1000
 
     return {
-        'data_mb': data_bytes / (1024 * 1024),
+        'data_gb': data_gb,
         'total_hops': total_hops,
         'hop_details': hop_details,
         'network_energy_kwh': net_energy_kwh,
@@ -245,7 +239,7 @@ def main():
     estimate = estimate_request_energy(_DATA_BYTES, visible_ips, hidden)
 
     if estimate:
-        print(f"Transport energy estimate for {estimate['data_mb'] / 1024:.1f} GB request to {target}\n")
+        print(f"Transport energy estimate for {estimate['data_gb']:.1f} GB request to {target}\n")
         print(f"  Route: {len(visible_ips)} visible + {hidden} silent = {estimate['total_hops']} hops")
         print(f"  Network energy:      {estimate['network_energy_kwh']:.6f} kWh")
         print(f"  DC networking:       {estimate['dc_net_energy_kwh']:.6f} kWh")
